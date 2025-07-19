@@ -2,7 +2,6 @@ package com.batchexam.batchexam.taskletBatch;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-@EnableBatchProcessing
 public class ExamBatch {
   @Autowired
   private JobRepository jobRepository; // 배치 작업 실행을 관리하는 저장소
@@ -67,7 +65,7 @@ public class ExamBatch {
   /**
    * 첫 번째 예제 스텝을 실행하는 배치 작업을 정의합니다.
    */
-  @Bean
+  @Bean("exampleJob")
   public Job exampleJob() {
     return new JobBuilder("exampleJob", jobRepository) // JobBuilder를 생성하여 작업의 이름과 JobRepository를 설정합니다.
         .incrementer(new RunIdIncrementer()) // 작업 실행 시마다 고유 ID를 생성하는 Incrementer를 설정합니다.
