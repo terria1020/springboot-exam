@@ -11,6 +11,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.TaskExecutor;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class ChunkBatch {
   // 1) Reader: CSV 파일에서 데이터를 읽음
-  @Bean
+  @Bean("csvReader")
   public FlatFileItemReader<DataModelDto> csvReader() {
     FlatFileItemReader<DataModelDto> reader = new FlatFileItemReader<>();
     // CSV 파일의 경로를 설정합니다.
@@ -48,14 +49,14 @@ public class ChunkBatch {
   }
 
   // 2) Processor: 데이터를 처리 (현재는 그대로 전달)
-  @Bean
+  @Bean("processor")
   public ItemProcessor<DataModelDto, DataModelDto> processor() {
     // 데이터를 그대로 반환하는 프로세서입니다.
     return dto -> dto;
   }
 
   // 3) Writer: 데이터를 JSON 형식으로 출력
-  @Bean
+  @Bean("jsonWriter")
   public ItemWriter<DataModelDto> jsonWriter() {
     return items -> {
       // JSON 변환을 위한 ObjectMapper를 생성합니다.
@@ -76,9 +77,9 @@ public class ChunkBatch {
   @Bean
   public Step csvChunkStep(JobRepository jobRepo,
       PlatformTransactionManager tx,
-      FlatFileItemReader<DataModelDto> reader,
-      ItemProcessor<DataModelDto, DataModelDto> processor,
-      ItemWriter<DataModelDto> writer) {
+      @Qualifier("csvReader") FlatFileItemReader<DataModelDto> reader,
+      @Qualifier("processor") ItemProcessor<DataModelDto, DataModelDto> processor,
+      @Qualifier("jsonWriter") ItemWriter<DataModelDto> writer) {
     return new StepBuilder("csvChunkStep", jobRepo)
         // 청크 크기를 설정합니다. (한 번에 50개씩 처리)
         .<DataModelDto, DataModelDto>chunk(50, tx)
@@ -88,8 +89,8 @@ public class ChunkBatch {
         .writer(writer)
         // 병렬 처리를 위한 TaskExecutor를 설정합니다.
         .taskExecutor(taskExecutor())
-        // 동시에 실행할 최대 청크 수를 설정합니다.
-        .throttleLimit(2)
+        // 동시에 실행할 최대 청크 수를 설정합니다. throttleLimit은 deprecated 됨
+        .startLimit(2)
         .build();
   }
 

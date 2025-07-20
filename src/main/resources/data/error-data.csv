@@ -1,0 +1,12 @@
+id,firstName,lastName,email
+1,Alice,Martin,alice.martin@test.com
+2,Emma,Park,emma.park@test.com
+,Bob,Smith,bob.smith@another.com
+5,TestRetry,Retry,retry@test.com
+4,,Doe,emma.doe@example.com
+5,Grace,Kim,invalid-email
+6,Bob,Smith,bob.smith@another.com
+7,Alice,Kim,alice.kim@another.com
+INVALID_LINE_FORMAT
+9,Jane,Martin,jane.martin@sample.com
+10,Jane,Martin,jane.martin@sample.com

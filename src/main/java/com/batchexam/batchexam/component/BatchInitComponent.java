@@ -20,8 +20,8 @@ public class BatchInitComponent {
   @Autowired
   private JobLauncher jobLauncher;
   @Autowired
-  @Qualifier("exampleJob")
-  private Job exampleJob;
+  @Qualifier("errorHandlingJob")
+  private Job errorHandlingJob;
 
   @EventListener(ApplicationReadyEvent.class)
   public void runBatchJob() throws JobExecutionAlreadyRunningException, JobRestartException,
@@ -30,7 +30,7 @@ public class BatchInitComponent {
         .addLong("time", System.currentTimeMillis())
         .toJobParameters();
 
-    jobLauncher.run(exampleJob, jobParameters);
+    jobLauncher.run(errorHandlingJob, jobParameters);
   }
 
 }
